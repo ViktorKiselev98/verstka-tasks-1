@@ -1,266 +1,150 @@
-
-
 #include <iostream>
-#include <cassert> 
-#include <iostream>
-#include <algorithm>
-#include <vector>
-#include <set>
-#include <iterator>
-//============================================================================================= 1 задание =========================================================
+#include <string>
+
 using namespace std;
-class ArrayInt
+//================================================================== 1 задание =======================================================
+template <class T>
+class Pair1
 {
 private:
-    int m_length;
-    int* m_data;
+	T m_a;
+	T m_b;
 
 public:
-    ArrayInt() : m_length(0), m_data(nullptr)
-    {
+	Pair1(const T& a, const T& b) : m_a(a), m_b(b)
+	{
+	}
 
-    }
-
-    ArrayInt(int length) : m_length(length)
-    {
-        assert(length >= 0);
-        if (length > 0)
-            m_data = new int[length];
-        else
-            m_data = nullptr;
-    }
-
-    ~ArrayInt()
-    {
-        delete[] m_data;
-    }
-
-    void erase()
-    {
-        delete[] m_data;
-
-        m_data = nullptr;
-        m_length = 0;
-    }
-
-    int& operator[](int index)
-    {
-        assert(index >= 0 && index < m_length);
-        return m_data[index];
-    }
-
-
-    void reallocate(int newLength)
-    {
-
-        erase();
-
-
-        if (newLength <= 0)
-            return;
-
-
-        m_data = new int[newLength];
-        m_length = newLength;
-    }
-
-
-    void resize(int newLength)
-    {
-
-        if (newLength == m_length)
-            return;
-
-
-        if (newLength <= 0)
-        {
-            erase();
-            return;
-        }
-
-
-        int* data = new int[newLength];
-
-
-        if (m_length > 0)
-        {
-            int elementsToCopy = (newLength > m_length) ? m_length : newLength;
-
-
-            for (int index = 0; index < elementsToCopy; ++index)
-                data[index] = m_data[index];
-        }
-
-
-        delete[] m_data;
-
-
-        m_data = data;
-        m_length = newLength;
-    }
-
-    void insertBefore(int value, int index)
-    {
-
-        assert(index >= 0 && index <= m_length);
-
-        int* data = new int[m_length + 1];
-
-
-        for (int before = 0; before < index; ++before)
-            data[before] = m_data[before];
-
-
-        data[index] = value;
-
-        for (int after = index; after < m_length; ++after)
-            data[after + 1] = m_data[after];
-
-
-        delete[] m_data;
-        m_data = data;
-        ++m_length;
-    }
-
-    void remove(int index)
-    {
-
-        assert(index >= 0 && index < m_length);
-
-
-        if (m_length == 1)
-        {
-            erase();
-            return;
-        }
-
-
-        int* data = new int[m_length - 1];
-
-
-        for (int before = 0; before < index; ++before)
-            data[before] = m_data[before];
-
-
-        for (int after = index + 1; after < m_length; ++after)
-            data[after - 1] = m_data[after];
-
-        delete[] m_data;
-        m_data = data;
-        --m_length;
-    }
-
-    void insertAtBeginning(int value)
-    {
-        insertBefore(value, 0);
-
-    }
-    void insertAtEnd(int value)
-    {
-        insertBefore(value, m_length);
-
-    }
-
-    int getLength()
-    {
-        return m_length;
-    }
+	T& first() 
+	{ 
+		return m_a; 
+	
+	}
+	const T& first() const 
+	{ 
+		return m_a; 
+	}
+	T& second() 
+	{ 
+		return m_b; 
+	}
+	const T& second() const 
+	{ 
+		return m_b; 
+	}
 };
-//============================================================================ 2 задание ==========================================================================
-
-int main()
+//========================================================================= 2 задание =========================================================
+template <class T, class S>
+class Pair
 {
+private:
+	T m_a;
+	S m_b;
 
-    std::vector<int> v = { 1,1,2,5 };
-    std::set<int> s(v.begin(), v.end());
-    std::cout << s.size() << std::endl;
-}
-// ============================================================================ 3 задание ===============================================================================
-class Hand
+public:
+	Pair(const T& a, const S& b)
+		: m_a(a), m_b(b)
+	{
+	}
+
+	T& first() { return m_a; }
+	const T& first() const { return m_a; }
+	S& second() { return m_b; }
+	const S& second() const { return m_b; }
+};
+//========================================================================== 3 задание ================================================================
+template <class T, class S>
+class Pair2
+{
+private:
+	T m_a;
+	S m_b;
+
+public:
+	Pair2(const T& a, const S& b) : m_a(a), m_b(b)
+	{
+	}
+
+	T& first() 
+	{ 
+		return m_a; 
+	}
+	const T& first() const 
+	{ 
+		return m_a; 
+	}
+	S& second() 
+	{ 
+		return m_b; 
+	}
+	const S& second() const 
+	{ 
+		return m_b; 
+	}
+};
+
+template <class S>
+class StringValuePair : public Pair <string, S>
 {
 public:
-    Hand();
+	StringValuePair(const string& c, const S& value)
+		: Pair<string, S>(c, value)
+	{
+	}
+};
+//=========================================================================== 4 задание =====================================================
+class GenericPlayer : public Hand
+{
+	friend ostream& operator<< (ostream& os, const GenericPlayer& aGenericPlayer);
 
-    virtual ~Hand();
+public:
+	GenericPlayer(const string& name = "");
 
-   
-    void Add(Card* pCard);
-    
-    void Clear();
+	virtual ~GenericPlayer();
 
-    int GetTotal() const;
+	virtual bool IsHitting() const = 0;
+
+	bool IsBusted() const;
+
+	void Bust() const;
 
 protected:
-    vector<Card*> m_Cards;
+	string m_Name;
 };
 
-Hand::Hand()
+GenericPlayer::GenericPlayer(const string& name) : m_Name(name)
 {
-    m_Cards.reserve(7);
 }
 
-Hand::~Hand()
+GenericPlayer::~GenericPlayer()
 {
-    Clear();
 }
 
-void Hand::Add(Card* pCard)
+bool GenericPlayer::IsBusted() const
 {
-    m_Cards.push_back(pCard);
+	return (GetTotal() > 21);
 }
 
-void Hand::Clear()
+void GenericPlayer::Bust() const
 {
-    
-    vector<Card*>::iterator iter;
-    for (iter = m_Cards.begin(); iter != m_Cards.end(); ++iter)
-    {
-        delete* iter;
-        *iter = 0;
-    }
-    
-    m_Cards.clear();
+	cout << m_Name << " busts.\n";
 }
-
-int Hand::GetTotal() const
+int main()
 {
-    
-    if (m_Cards.empty())
-    {
-        return 0;
-    }
+	Pair1<int> p1(6, 9);
+	cout << "Pair: " << p1.first() << ' ' << p1.second() << endl;
 
-    
-    if (m_Cards[0]->GetValue() == 0)
-    {
-        return 0;
-    }
+	const Pair1<double> p2(3.4, 7.8);
+	cout << "Pair: " << p2.first() << ' ' << p2.second() << endl;
 
-    
-    int total = 0;
-    vector<Card*>::const_iterator iter;
-    for (iter = m_Cards.begin(); iter != m_Cards.end(); ++iter)
-    {
-        total += (*iter)->GetValue();
-    }
+	Pair<int, double> p1(6, 7.8);
+	cout << "Pair: " << p1.first() << ' ' << p1.second() << endl;
 
-    
-    bool containsAce = false;
-    for (iter = m_Cards.begin(); iter != m_Cards.end(); ++iter)
-    {
-        if ((*iter)->GetValue() == Card::ACE)
-        {
-            containsAce = true;
-        }
-    }
+	const Pair<double, int> p2(3.4, 5);
+	cout << "Pair: " << p2.first() << ' ' << p2.second() << endl;
 
-   
-    if (containsAce && total <= 11)
-    {
-        
-        total += 10;
-    }
+	StringValuePair<int> svp("Amazing", 7);
+	std::cout << "Pair: " << svp.first() << ' ' << svp.second() << endl;
 
-    return total;
+	return 0;
 }
-
